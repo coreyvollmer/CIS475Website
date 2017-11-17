@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang ="en">
 <?php
-	include_once("scripts/php/functions.php"); 
+	include_once("scripts/php/vars.php"); 
+	include_once("scripts/php/functions.php");
 ?>
 <head>
 	<?php loadHeader();?>
@@ -23,9 +24,7 @@
 				<img src="img/owl.png" alt="owl">
 			</div>
 			<p><?php echo($helloText);?></p>	
-			<p style="text-align:center">
-				<?php displayDownloadLinks();?>
-			<!--</p> removed for validation which claimed there was no p in scope-->
+			<?php displayDownloadLinks();?>
 		</div> <!--End panel-->
 		<?php displayFooter();?>
 	</div><!--End overlay-->

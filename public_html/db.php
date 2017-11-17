@@ -2,7 +2,6 @@
 <html lang ="en">
 <?php
 	include_once("scripts/php/vars.php"); 
-	include_once("scripts/php/dbvars.php");
 	include_once("scripts/php/functions.php");
 ?>
 <head>
@@ -21,7 +20,10 @@
 			<!--<div class="title"></div> -->
 			<h1><?php echo("SQL DB");?></h1>
 			<hr>
-			<?php displayDB(); ?>
+			<div style="text-align:center;">
+				<?php displayDB(); ?>
+			</div>
+			<?php displayDownloadLinks(); ?>
 		</div> <!--End panel-->
 		<?php displayFooter();?>
 	</div><!--End overlay-->

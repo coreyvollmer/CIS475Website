@@ -19,7 +19,7 @@
 		<div class="panel">
 			<h1><?php echo("$name");?></h1>
 			<hr>
-				<?php makeTable();?>			
+				<?php makeTable(0);?>			
 			<!-- <p style="text-align:center"> -->
 				<?php displayDownloadLinks();?>		
 		</div> <!--End panel-->

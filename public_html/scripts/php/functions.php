@@ -2,87 +2,30 @@
 include_once("scripts/php/vars.php"); 
 
 	function displayDB(){
-		echo("<form action='#' method='post'>");
+		echo('<form id="createTableForm" method="POST" action="sqlcreate.php">');
 		echo('<input type="submit" name="submit" value="Import Months">');
 		echo("</form>");
 	}
-	
-	function dbCreateTable(){
-		$ioPath = "scripts/io/cis475_io.txt";
-		$columnOne = array();
-        $columnTwo = array();
-        $columnThree = array();
-		$i = '1';
-		$fh = fopen($ioPath,"rt"); //file handler
-	
-		$split = Array();
-		
-		//Input data from file with fgetcsv()
-		while(($line = fgetcsv($fh)) !== FALSE){
-			$columnOne[$i] = $line[0];
-			$columnTwo[$i] = $line[1];
-			$columnThree[$i] = $line[2];
-			$i = $i + 1;
-		}
-		
-		//Create sql connection
-		$sqlConn = new mysqli($dbServer, $dbUsername, $dbPassword, $dbDatabase);
-		if ($sqlConn->connect_error){
-			die("Failed to connect." . $sqlConn->connect_error);
-		}
-		else{echo "Connected to database.<br><br>";}
-		$sqlConn->query("DROP TABLE IF EXISTS monthsTable");		
-		$sqlQuery = "CREATE TABLE monthsTable(
-						monthsID INT(2),
-						monthName CHAR(10),
-						monthDays INT(2)
-					)";
-		if ($conn->query($sqlQuery) === TRUE){
-			echo "Table has been created.<br>";
-		} 
-		else{
-			echo "Error." . $sql . "<br>" . $aqlConn->error;
-		}	
-		//Insert into db with loop
-		for($t = 0; $t <= 11; $t++){		
-			$sqlQuery = "INSERT INTO monthsTable (monthsID, monthName, monthDays)
-						 VALUES ('$columnOne[$t]', '$columnTwo[$t]', '$columnThree[$t]')";
-			if($sqlConn->query($sqlQuery) === TRUE){
-				echo "New record inserted.<br>";
-			} 
-			else{
-				echo("Error: " . $sqlQuery . "<br>" . $conn->error);
-			}
-		}
-		//echo "<br><img src=\"monthsTable.JPG\" alt=\"image\" height=\"500\" width=\"500\"><br>";
-	}	
 
     function displayDownloadLinks(){	
-        $fileNames = array("index","lfa","scripts/php/vars","scripts/php/functions","io","scripts/io/cis475_ior.txt"); // names of download files
+        $fileNames = array("index.php","lfa.php","scripts/php/vars.php","scripts/php/functions.php","io.php"
+		,"scripts/io/cis475_ior.txt","db.php","sqlcreate.php","php_mysql_table.php"); // names of download files
         $front = "<a href='download.php?file="; //First part of link string
 		//todo: Can't get download to work with file in scripts folder.
 		//$front = "<a href='scripts/php/download.php?file="; //First part of link string
 		
-        $middle = ".php' download>"; //Middle section of link string
-        $ending = ".php</a><br>";
-        $i = 0; // used to check 5th position 
-        echo('<div style="text-align:center">');
-		echo('<p><h2>Downloads</h2>');
-		//echo('</p>'); removed for validation which claimed there was no p in scope
+        $middle = "' download>"; //Middle section of link string
+        $ending = "</a><br>";
+        //$i = 0; // used to check 5th position 
+		echo('<div style="text-align:center;">');
+		echo('<h2>Downloads</h2>');
         echo('<ol type="I" style="text-align: center; list-style-position:inside; ">');
         foreach($fileNames as $name){
             echo('<li style="background-color:gray;opacity:.5;width:18vw;padding-top:20px;margin: 0 auto;">');
-			if($i>4){
-				echo("$front$name' download>$name</a><br></li>");  
-			}
-			else{
-				echo("$front$name$middle$name$ending</li>");  
-		  
-            $i = $i + 1;
-			}
+			echo("$front$name$middle$name$ending</li>");  	
 		}
         echo('</ol>');
-        echo('</div>');
+		echo('</div>');
     }
 	
     function displayFooter(){
@@ -115,20 +58,18 @@ include_once("scripts/php/vars.php");
 		echo('<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>');
 		echo("<script>particlesJS.load('particles-js', 'scripts/json/particles.json', function(){});</script>");
     }
-
     function displayNavigationMenu(){
         //Names that appear in navigation
-        $pageNames = array("Home","Resume","CCMiner","Server Setup","Arrays","IO","SQL DB");
+        $pageNames = array("Home","UNC 111","Resume","CCMiner","Server Setup","Arrays","IO","SQL DB","PHP MySQL Table","PHP MySQL Form");
                 
         //Names of files correlated with above array
-        $pageFiles = array("index","resume","cryptoMiner","setup","lfa","io","db");  
+        $pageFiles = array("index","UNC111/pages/index","resume","cryptoMiner","setup","lfa","io","db","php_mysql_table","php_mysql_form");  
         $style = "'display:inline;'";
         //Simple loop to display all pages, dynamic to size
         for($i=0; $i < count($pageNames); $i++){
             echo("<li style=$style><a href='$pageFiles[$i].php'>$pageNames[$i]</a></li>");
         }
     }
-	
 	function io (){
 		$ioPath = "scripts/io/cis475_io.txt";
 		$columnOne = array();
@@ -240,10 +181,40 @@ include_once("scripts/php/vars.php");
       
     }
     
-    function makeTable(){
-        $columnOne = array("Number",1,2,3,4,5,6,7,8,9,10,11,12); //Month Numbers
-        $columnTwo = array("Month","January","February","March","April","May","June","July","August","September","October","November","December");
-        $columnThree = array("Days",31,28,31,30,31,30,31,31,30,31,30,31); //Days Per Month
+	//makes a table, $useSQL is used as a flag to determine where to get data from
+    function makeTable($useSQL){
+		if($useSQL){ //for sql table page
+			$dbUsername = "vollmecm01"; // Your bsc username
+			$dbPassword = "B00762820"; // Your bsc Banner ID beginning with 'B'
+			$dbDatabase = $dbUsername; // your-bsc-username
+			$dbServer = "localhost" ;
+			
+			//Create sql connection
+			$mysqli = new mysqli($dbServer, $dbUsername, $dbPassword, $dbDatabase);
+			if ($mysqli->connect_error){
+				die("Failed to connect." . $mysqli->connect_error);
+			}
+			else{echo "Connected to database.<br><br>";}
+			$query = 'SELECT monthsID, monthName, monthDays FROM monthsTable;';
+			if ($result = $mysqli->query($query)) {
+				$j = '1';
+				$columnOne = array("Number");
+				$columnTwo = array("Month");
+				$columnThree = array("Days");
+				while($row = $result->fetch_assoc()) { //insert query into array variables
+					$columnOne[$j] = $row['monthsID'];
+					$columnTwo[$j] = $row['monthName'];
+					$columnThree[$j] = $row['monthDays'];
+					$j = $j + 1;
+				}
+			}
+			$mysqli->close();
+			}else{ //for array page
+			$columnOne = array("Number",1,2,3,4,5,6,7,8,9,10,11,12); //Month Numbers
+			$columnTwo = array("Month","January","February","March","April","May","June","July","August","September","October","November","December");
+			$columnThree = array("Days",31,28,31,30,31,30,31,31,30,31,30,31); //Days Per Month
+		}
+		//styles
         $tdOdd = '<td style="background-color:#3B6BFF;opacity:.8;">'; //td style for odd rows
         $tdEven = '<td style="background-color:#2C4FBA;opacity:.8;">'; //td style for even rows
         $thStyle = '<th style="font-size:40px;background-color:white;color:black;opacity:.8;">';
