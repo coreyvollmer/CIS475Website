@@ -19,7 +19,7 @@
 		<div class="panel">
 			<h1><?php echo("PHP MySQL Table");?></h1>
 			<hr>
-				<?php makeTable(1);?>			
+				<?php createTable(0); makeTable(1);//0 for no echos and 1 for use sql table?>	
 			<!-- <p style="text-align:center"> -->
 				<?php displayDownloadLinks();?>		
 		</div> <!--End panel-->
